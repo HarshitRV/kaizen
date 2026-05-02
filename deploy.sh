@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="kaizen"
+APP_NAME="kaizen-ui"
 APP_DIR="$(cd "$(dirname "$0")" && pwd)"
 PORT=3274
-BUN="/home/harshitrvpi/.bun/bin/bun"
+PNPM="/home/harshitrvpi/.nvm/versions/node/v24.14.1/bin/pnpm"
 
-export PATH="$BUN:$PATH"
+export PATH="/home/harshitrvpi/.nvm/versions/node/v24.14.1/bin:$PATH"
 
 cd "$APP_DIR"
 
@@ -22,12 +22,12 @@ git pull
 # ── 2. Install dependencies ──────────────
 echo ""
 echo "→ Installing dependencies..."
-bun install
+$PNPM install
 
 # ── 3. Build ─────────────────────────────
 echo ""
 echo "→ Building for production..."
-bun run build
+$PNPM run build
 
 # ── 4. Start or restart PM2 ─────────────
 echo ""
