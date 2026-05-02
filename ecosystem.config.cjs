@@ -1,10 +1,10 @@
 module.exports = {
   apps: [
     {
-      name: 'kaizen',
-      script: 'node_modules/.bin/vite',
-      args: 'preview --port 3274 --host 0.0.0.0 --strictPort',
+      name: 'kaizen-ui',
       cwd: '/home/harshitrvpi/code/pro/kaizen',
+      script: '/home/harshitrvpi/.nvm/versions/node/v24.14.1/bin/pnpm',
+      args: 'run preview',
       env: {
         NODE_ENV: 'production',
       },
