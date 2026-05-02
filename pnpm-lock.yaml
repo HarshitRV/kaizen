@@ -72,10 +72,10 @@ importers:
         specifier: 1.4.0
         version: 1.4.0
       zod:
-        specifier: ^4.4.2
+        specifier: 4.4.2
         version: 4.4.2
       zustand:
-        specifier: ^5.0.12
+        specifier: 5.0.12
         version: 5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
     devDependencies:
       '@tailwindcss/typography':
