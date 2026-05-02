@@ -34,7 +34,7 @@ function RouteComponent() {
 
   return (
     <MainContent className="justify-start gap-6 px-3 py-6 sm:px-6">
-      <section className="flex w-full max-w-5xl flex-col items-center gap-4 text-center">
+      <section className="hidden sm:flex w-full max-w-5xl flex-col items-center gap-4 text-center">
         <Button asChild variant="ghost" size="sm" className="self-start">
           <Link to="/past">
             <ArrowLeft aria-hidden="true" />
@@ -75,7 +75,7 @@ function RouteComponent() {
         </Field>
       </section>
 
-      <section className="grid w-full max-w-5xl grid-cols-1 gap-3 sm:grid-cols-3">
+      <section className="hidden sm:grid w-full max-w-5xl grid-cols-1 gap-3 sm:grid-cols-3">
         {metrics.map((metric) => (
           <Card key={metric.label} size="sm">
             <CardContent className="flex flex-col items-center gap-1 text-center">
@@ -90,7 +90,7 @@ function RouteComponent() {
         ))}
       </section>
 
-      <section className="w-full max-w-5xl overflow-hidden rounded-lg border bg-card">
+      <section className="w-full max-w-5xl rounded-lg border bg-card">
         <div className="flex items-center justify-between gap-3 border-b px-4 py-3">
           <div className="flex items-center gap-2 text-sm font-medium">
             <CircleDot className="size-4 text-chart-3" aria-hidden="true" />
@@ -112,7 +112,7 @@ function RouteComponent() {
           </div>
         </div>
 
-        <div className="max-h-[52dvh] overflow-y-auto overflow-x-hidden p-4">
+        <div className="overflow-y-auto overflow-x-hidden p-4">
           <div className="grid grid-cols-[repeat(auto-fill,minmax(0.55rem,1fr))] mb-7 gap-1 sm:grid-cols-[repeat(auto-fill,minmax(0.7rem,1fr))] lg:grid-cols-52 lg:mb-0">
             {future.weekGrid.map(({ index, week, year }) => {
               const isPast = index < future.elapsedWeeks
