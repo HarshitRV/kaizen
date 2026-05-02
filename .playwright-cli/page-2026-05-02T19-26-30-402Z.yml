@@ -1,0 +1,17 @@
+- generic [active] [ref=e1]:
+    - navigation [ref=e2]:
+        - list [ref=e3]:
+            - listitem [ref=e4]:
+                - link [ref=e5] [cursor=pointer]:
+                    - /url: /
+                    - img
+            - listitem [ref=e6]:
+                - button [ref=e7] [cursor=pointer]:
+                    - img
+    - main [ref=e8]:
+        - group [ref=e15]
+    - contentinfo [ref=e5243]:
+        - img [ref=e5244]
+        - text: '2026'
+        - link "harshitrv" [ref=e5247] [cursor=pointer]:
+            - /url: https://harshitrv.in

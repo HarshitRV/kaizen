@@ -1,0 +1,1 @@
+export const AVERAGE_LIFESPAN_YEARS = 100
