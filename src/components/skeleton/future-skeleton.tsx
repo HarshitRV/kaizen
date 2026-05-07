@@ -46,7 +46,7 @@ export function FutureSkeleton() {
           <Skeleton className="h-4 w-40" />
         </div>
 
-        <div className="max-h-[52dvh] overflow-hidden p-4">
+        <div className="overflow-y-auto overflow-x-hidden p-4">
           <div className="grid grid-cols-[repeat(auto-fill,minmax(0.55rem,1fr))] gap-1 sm:grid-cols-[repeat(auto-fill,minmax(0.7rem,1fr))] lg:grid-cols-52">
             {Array.from({ length: 5200 }).map((_, index) => (
               <Skeleton key={index} className="aspect-square rounded-xs" />

@@ -23,20 +23,31 @@ function getTimePassed(birthDate: Date, lifespanYears: number) {
   }
 }
 
+export function getDurationLived(birthDate: Date) {
+  const duration = intervalToDuration({ start: birthDate, end: new Date() })
+  return {
+    years: duration.years,
+    months: duration.months,
+    weeks: duration.weeks,
+    days: duration.days,
+    seconds: duration.seconds,
+  }
+}
+
 export function useTimePassed() {
   const birthDate = useDateStore((state) => state.birthDate)
   const lifespanYears = useDateStore((state) => state.lifespanYears)
 
   const [timePassed, setTimePassed] = useState(() =>
-    birthDate ? getTimePassed(new Date(birthDate), lifespanYears) : null,
+    birthDate ? getTimePassed(birthDate, lifespanYears) : null,
   )
 
   useEffect(() => {
     if (!birthDate) return
 
-    setTimePassed(getTimePassed(new Date(birthDate), lifespanYears))
+    setTimePassed(getTimePassed(birthDate, lifespanYears))
     const interval = setInterval(() => {
-      setTimePassed(getTimePassed(new Date(birthDate), lifespanYears))
+      setTimePassed(getTimePassed(birthDate, lifespanYears))
     }, 1_000)
 
     return () => clearInterval(interval)

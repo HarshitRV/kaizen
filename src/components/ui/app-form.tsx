@@ -11,6 +11,9 @@ import { Button } from '@/components/ui/button'
 import { ChevronDownIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '#/lib/utils'
+import { Slider } from './slider'
+import type { ComponentProps } from 'react'
+import type { Slider as SliderPrimitive } from 'radix-ui'
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts()
@@ -117,6 +120,41 @@ export function DateField({
   )
 }
 
+interface RangeFieldProps extends ComponentProps<typeof SliderPrimitive.Root> {
+  label: string
+  fieldClassName?: string
+}
+
+export function RangeField({
+  label,
+  fieldClassName,
+  className,
+  ...props
+}: RangeFieldProps) {
+  const field = useFieldContext<number[]>()
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+
+  return (
+    <Field className={cn(fieldClassName)}>
+      <div className="flex items-center justify-between gap-2">
+        <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+        <span className="text-sm text-muted-foreground">
+          {field.state.value}
+        </span>
+      </div>
+      <Slider
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        onValueChange={field.handleChange}
+        className={cn(className)}
+        {...props}
+      />
+      {isInvalid && <FieldError errors={field.state.meta.errors[0]} />}
+    </Field>
+  )
+}
+
 interface SubscribeButtonProps {
   children: React.ReactNode
   className?: string
@@ -156,6 +194,7 @@ export const { useAppForm, withForm } = createFormHook({
   fieldComponents: {
     TextField,
     DateField,
+    RangeField,
   },
   formComponents: {
     SubscribeButton,

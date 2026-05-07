@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PreviewRouteImport } from './routes/preview'
 import { Route as PastRouteImport } from './routes/past'
 import { Route as FutureRouteImport } from './routes/future'
 import { Route as IndexRouteImport } from './routes/index'
 
+const PreviewRoute = PreviewRouteImport.update({
+  id: '/preview',
+  path: '/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PastRoute = PastRouteImport.update({
   id: '/past',
   path: '/past',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/future': typeof FutureRoute
   '/past': typeof PastRoute
+  '/preview': typeof PreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/future': typeof FutureRoute
   '/past': typeof PastRoute
+  '/preview': typeof PreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/future': typeof FutureRoute
   '/past': typeof PastRoute
+  '/preview': typeof PreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/future' | '/past'
+  fullPaths: '/' | '/future' | '/past' | '/preview'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/future' | '/past'
-  id: '__root__' | '/' | '/future' | '/past'
+  to: '/' | '/future' | '/past' | '/preview'
+  id: '__root__' | '/' | '/future' | '/past' | '/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FutureRoute: typeof FutureRoute
   PastRoute: typeof PastRoute
+  PreviewRoute: typeof PreviewRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/preview': {
+      id: '/preview'
+      path: '/preview'
+      fullPath: '/preview'
+      preLoaderRoute: typeof PreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/past': {
       id: '/past'
       path: '/past'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FutureRoute: FutureRoute,
   PastRoute: PastRoute,
+  PreviewRoute: PreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

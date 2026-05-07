@@ -7,9 +7,26 @@ import { Field, FieldLabel } from '#/components/ui/field'
 import { Progress } from '#/components/ui/progress'
 import { useTimeRemaining } from '#/hooks/use-time-remaining'
 import { seo } from '#/utils/seo'
-import { cn } from '#/lib/utils'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { ArrowLeft, CircleDot } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { WeekGrid } from '#/components/reusable/week-grid/week-grid'
+import { WeekBreakdown } from '#/components/container/week-breakdown/week-breakdown'
+import { ButtonGroup } from '#/components/ui/button-group'
+import { useState } from 'react'
+import { useAppForm } from '#/components/ui/app-form'
+import { z } from 'zod'
+import {
+  setBirthDate,
+  setLifespanYears,
+  useDateStore,
+} from '#/store/date-store'
+import { getDurationLived } from '#/hooks/use-time-passed'
+import { subYears } from 'date-fns'
+
+const gridSliderConfigSchema = z.object({
+  age: z.array(z.number().min(1).max(120)).length(1),
+  lifeExpectancy: z.array(z.number().min(1).max(120)).length(1),
+})
 
 export const Route = createFileRoute('/future')({
   head: () => ({
@@ -25,7 +42,17 @@ export const Route = createFileRoute('/future')({
 })
 
 function RouteComponent() {
+  return (
+    <MainContent className="justify-start gap-4 px-3 py-6 sm:px-6">
+      <MetricsSections />
+      <GridSection />
+    </MainContent>
+  )
+}
+
+function MetricsSections() {
   const future = useTimeRemaining()
+
   const metrics = [
     { label: 'WEEKS LEFT', value: future.remainingWeeks.toLocaleString() },
     { label: 'DAYS LEFT', value: future.remainingDays.toLocaleString() },
@@ -33,7 +60,7 @@ function RouteComponent() {
   ]
 
   return (
-    <MainContent className="justify-start gap-6 px-3 py-6 sm:px-6">
+    <>
       <section className="hidden sm:flex w-full max-w-5xl flex-col items-center gap-4 text-center">
         <Button asChild variant="ghost" size="sm" className="self-start">
           <Link to="/past">
@@ -89,53 +116,122 @@ function RouteComponent() {
           </Card>
         ))}
       </section>
+    </>
+  )
+}
 
-      <section className="w-full max-w-5xl rounded-lg border bg-card">
-        <div className="flex items-center justify-between gap-3 border-b px-4 py-3">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <CircleDot className="size-4 text-chart-3" aria-hidden="true" />
-            Week map
-          </div>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
-              <span className="size-2 rounded-sm bg-muted-foreground/20" />
-              Spent
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span className="size-2 rounded-sm bg-primary" />
-              Now
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span className="size-2 rounded-sm bg-chart-2" />
-              Ahead
-            </span>
-          </div>
+function SettingsSection() {
+  const birthDate = useDateStore((state) => state.birthDate)
+  const lifespanYears = useDateStore((state) => state.lifespanYears)
+
+  const form = useAppForm({
+    defaultValues: {
+      age: [birthDate ? getDurationLived(birthDate).years : 24],
+      lifeExpectancy: [lifespanYears],
+    },
+    validators: {
+      onChange: gridSliderConfigSchema,
+    },
+  })
+
+  return (
+    <div className="w-full max-w-5xl space-y-6">
+      {!birthDate && (
+        <div className="rounded-md border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
+          Please set your birth date on the{' '}
+          <Link
+            to="/"
+            className="text-primary underline underline-offset-4 hover:text-primary/80"
+          >
+            home page
+          </Link>{' '}
+          to interact with below settings.
         </div>
-
-        <div className="overflow-y-auto overflow-x-hidden p-4">
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(0.55rem,1fr))] mb-7 gap-1 sm:grid-cols-[repeat(auto-fill,minmax(0.7rem,1fr))] lg:grid-cols-52 lg:mb-0">
-            {future.weekGrid.map(({ index, week, year }) => {
-              const isPast = index < future.elapsedWeeks
-              const isCurrent = index === future.elapsedWeeks
-              const isRemaining = !isPast && !isCurrent
-
-              return (
-                <span
-                  key={index}
-                  className={cn(
-                    'aspect-square rounded-xs',
-                    isPast && 'bg-muted-foreground/20',
-                    isCurrent && 'bg-primary ring-2 ring-primary/30',
-                    isRemaining && 'bg-chart-2',
-                  )}
-                  title={`Year ${year}, week ${week}`}
-                  aria-label={`Year ${year}, week ${week}`}
-                />
-              )
-            })}
-          </div>
-        </div>
+      )}
+      <section
+        className={`flex w-full flex-col gap-12 lg:flex-row ${!birthDate ? 'pointer-events-none opacity-50 grayscale' : ''}`}
+      >
+        <form.AppField
+          name="age"
+          children={(field) => (
+            <field.RangeField
+              label="Age"
+              min={0}
+              max={120}
+              step={1}
+              disabled={!birthDate}
+              onValueChange={(value) => {
+                field.handleChange(value)
+                setBirthDate(subYears(new Date(), value[0]))
+              }}
+            />
+          )}
+        />
+        <form.AppField
+          name="lifeExpectancy"
+          children={(field) => (
+            <field.RangeField
+              label="Life expectancy"
+              min={1}
+              max={120}
+              step={1}
+              disabled={!birthDate}
+              onValueChange={(value) => {
+                field.handleChange(value)
+                setLifespanYears(value[0])
+              }}
+            />
+          )}
+        />
       </section>
-    </MainContent>
+    </div>
+  )
+}
+
+function GridSection() {
+  const [view, setView] = useState<'unified' | 'by-phase'>('by-phase')
+
+  return (
+    <>
+      <section className="w-full max-w-5xl flex flex-col lg:flex-row gap-12">
+        <SettingsSection />
+      </section>
+      <section className="flex w-full max-w-5xl justify-end gap-4 text-center">
+        <ButtonGroup>
+          <Button
+            className={
+              view === 'unified'
+                ? 'bg-chart-4'
+                : 'bg-muted text-black dark:text-foreground'
+            }
+            onClick={() => setView('unified')}
+          >
+            Unified
+          </Button>
+          <Button
+            className={
+              view === 'by-phase'
+                ? 'bg-chart-4'
+                : 'bg-muted text-black dark:text-foreground'
+            }
+            onClick={() => setView('by-phase')}
+          >
+            By phase
+          </Button>
+        </ButtonGroup>
+      </section>
+      <section
+        key={view}
+        className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-3 duration-500 ease-out"
+      >
+        {view === 'unified' && (
+          <WeekGrid>
+            <WeekGrid.Header />
+            <WeekGrid.Grid />
+          </WeekGrid>
+        )}
+        {view === 'by-phase' && <WeekBreakdown />}
+      </section>
+    </>
   )
 }
